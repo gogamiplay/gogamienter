@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - GOGAMI</title>
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --secondary-blue: #1e40af;
+            --bg-white: #ffffff;
+            --text-dark: #1f2937;
+            --light-gray: #f3f4f6;
+            --card-border: #e5e7eb;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--light-gray); color: var(--text-dark); overflow-x: hidden; }
+        
+        header { background: var(--bg-white); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary-blue); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        header h1 { color: var(--primary-blue); font-size: 26px; text-transform: uppercase; letter-spacing: 2px; }
+        .nav-links a { color: var(--text-dark); text-decoration: none; margin-left: 25px; font-size: 15px; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary-blue); }
+
+        .container { max-width: 1200px; margin: auto; padding: 50px 20px; }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .contact-info { background: var(--bg-white); border-radius: 15px; padding: 40px; border: 1px solid var(--card-border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .contact-info h2 { color: var(--primary-blue); font-size: 28px; margin-bottom: 25px; }
+        .contact-item { margin-bottom: 30px; }
+        .contact-item h3 { color: var(--primary-blue); font-size: 18px; margin-bottom: 8px; }
+        .contact-item p { color: #4b5563; font-size: 16px; line-height: 1.6; }
+        .contact-item a { color: var(--primary-blue); text-decoration: none; }
+        .contact-item a:hover { text-decoration: underline; }
+
+        .map-placeholder { background: var(--bg-white); border-radius: 15px; padding: 40px; border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: center; min-height: 400px; color: #6b7280; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+
+        footer { text-align: center; padding: 40px; background: var(--bg-white); margin-top: 60px; border-top: 1px solid var(--card-border); color: #6b7280; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>GOGAMI Store</h1>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="products.html">Products</a>
+            <a href="booking.html">Login/Booking</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h2>Contact Us</h2>
+                
+                <div class="contact-item">
+                    <h3>📍 Office Address</h3>
+                    <p>#09 Devsur Building,<br>Karjagi Railway Station,<br>Haveri, Karnataka - 581112</p>
+                </div>
+                
+                <div class="contact-item">
+                    <h3>📞 Contact Number</h3>
+                    <p><a href="tel:+919019941895">+91 90199 41895</a></p>
+                </div>
+                
+                <div class="contact-item">
+                    <h3>✉️ Email Address</h3>
+                    <p><a href="mailto:gogamionline@gmail.com">gogamionline@gmail.com</a></p>
+                </div>
+                
+                <div class="contact-item">
+                    <h3>🕐 Business Hours</h3>
+                    <p>Monday - Saturday: 10:00 AM - 8:00 PM<br>Sunday: Closed</p>
+                </div>
+            </div>
+            
+            <div class="map-placeholder">
+                <div style="text-align: center;">
+                    <p style="font-size: 48px; margin-bottom: 10px;">📍</p>
+                    <p style="font-weight: 600; color: var(--text-dark);">Google Maps Location</p>
+                    <p style="font-size: 14px; margin-top: 10px;">#09 Devsur Building,<br>Karjagi Railway Station, Haveri</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 GOGAMI. All rights reserved. Powered by GitHub Pages.</p>
+    </footer>
+
+</body>
+</html>
