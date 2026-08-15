@@ -33,16 +33,13 @@
         
         .note { font-size: 11px; color: #64748b; text-align: center; line-height: 1.4; margin-top: 15px; font-weight: 600; }
 
-        /* Beautiful Success Modal Popup Styles */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; animation: fadeIn 0.2s ease; }
-        .modal-box { background: #ffffff; width: 85%; max-width: 320px; border-radius: 20px; padding: 25px 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #e2e8f0; transform: scale(0.9); animation: scaleUp 0.2s ease forwards; }
+        /* Success Modal Popup Styles */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-box { background: #ffffff; width: 85%; max-width: 320px; border-radius: 20px; padding: 25px 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #e2e8f0; }
         .success-icon-circle { width: 64px; height: 64px; background: #ecfdf5; color: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 15px auto; border: 2px solid #a7f3d0; }
         .modal-title { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
         .modal-desc { font-size: 13px; color: #64748b; line-height: 1.4; margin-bottom: 20px; font-weight: 600; }
         .modal-btn { width: 100%; background: #025922; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 13px; text-transform: uppercase; cursor: pointer; letter-spacing: 0.5px; }
-        
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes scaleUp { from { transform: scale(0.9); } to { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -50,29 +47,29 @@
 <div class="app-container">
     <div>
         <div class="header">
-            <a href="dashboard.html" class="back-btn">←</a>
+            <a href="https://gogamiplay.github.io/gogami/dashboard.html" class="back-btn">←</a>
             <div class="title">Wallet Top-Up</div>
             <div style="width: 36px;"></div>
         </div>
 
         <div class="card">
-            <label class="label">Enter Amount (₹)</label>
-            <input type="number" id="paymentAmountField" class="amount-input" placeholder="e.g. 500" value="500">
+            <label class="label">Enter Amount (₹200 - ₹5000)</label>
+            <input type="number" id="paymentAmountField" class="amount-input" placeholder="e.g. 500" value="200">
             
             <div class="quick-amounts">
-                <button class="quick-btn" onclick="setAmount(100)">+₹100</button>
+                <button class="quick-btn" onclick="setAmount(200)">+₹200</button>
                 <button class="quick-btn" onclick="setAmount(500)">+₹500</button>
                 <button class="quick-btn" onclick="setAmount(1000)">+₹1000</button>
                 <button class="quick-btn" onclick="setAmount(2000)">+₹2000</button>
+                <button class="quick-btn" onclick="setAmount(3000)">+₹3000</button>
                 <button class="quick-btn" onclick="setAmount(5000)">+₹5000</button>
-                <button class="quick-btn" onclick="setAmount(10000)">+₹10000</button>
             </div>
         </div>
     </div>
 
     <div>
-        <button class="pay-btn" onclick="startSecurePayment()">Proceed to Pay</button>
-        <div class="note">🔒 100% Secure Transaction via Razorpay.<br>Balance updates instantly upon completion.</div>
+        <button class="pay-btn" onclick="startSecurePayment()">Pay via UPI</button>
+        <div class="note">🔒 Secure UPI Payment via Razorpay.<br>Balance updates instantly upon completion.</div>
     </div>
 </div>
 
@@ -107,7 +104,7 @@
 
     auth.onAuthStateChanged(user => {
         if (!user) {
-            window.location.href = 'index.html';
+            window.location.href = 'https://gogamiplay.github.io/gogami/index.html';
         }
     });
 
@@ -115,32 +112,58 @@
         const amountVal = document.getElementById('paymentAmountField').value.trim();
         const amount = parseFloat(amountVal);
 
-        if (!amount || amount < 10) {
-            alert('⚠️ Please enter a valid amount (Minimum ₹10).');
+        // 🛑 Min ₹200 and Max ₹5000 Validation
+        if (!amount || amount < 200 || amount > 5000) {
+            alert('⚠️ Please enter an amount between ₹200 and ₹5000.');
             return;
         }
 
         const user = auth.currentUser;
         if (!user) {
             alert('⚠️ Session expired. Please login again.');
-            window.location.href = 'index.html';
+            window.location.href = 'https://gogamiplay.github.io/gogami/index.html';
             return;
         }
 
         const options = {
-            "key": "rzp_live_TQ14NQzpq4l3Fc", // Apna Razorpay Key ID yahan rakhein
+            "key": "rzp_live_TQ14NQzpq4l3Fc", // Apna Razorpay Key ID yahan daalein
             "amount": amount * 100, 
             "currency": "INR",
             "name": "GOGAMI",
             "description": "Wallet Topup",
             "image": "https://i.imgur.com/DEFyMFt.png",
+            // 🛑 Yeh configuration ensure karegi ki user ko direct UPI apps options milen
+            "method": {
+                "netbanking": false,
+                "card": false,
+                "wallet": false,
+                "emi": false,
+                "upi": true
+            },
+            "config": {
+                "display": {
+                    "blocks": {
+                        "banks": {
+                            "name": "Pay via UPI Apps",
+                            "instruments": [
+                                {
+                                    "method": "upi"
+                                }
+                            ]
+                        }
+                    },
+                    "sequence": ["block.banks"],
+                    "preferences": {
+                        "show_default_blocks": false
+                    }
+                }
+            },
             "handler": function (response) {
-                // Payment success hone par popup show karein
-                document.getElementById('successPopupDesc').innerText = `Payment ID: ${response.razorpay_payment_id}\n₹${amount} added securely to your wallet.`;
+                document.getElementById('successPopupDesc').innerText = `Payment ID: ${response.razorpay_payment_id}\n₹${amount} added successfully to your wallet.`;
                 document.getElementById('successModalPopup').style.display = 'flex';
             },
             "notes": {
-                "userId": user.uid // Webhook ke liye zaroori user linkage
+                "userId": user.uid
             },
             "theme": {
                 "color": "#025922"
@@ -152,7 +175,7 @@
     }
 
     function redirectToDashboard() {
-        window.location.href = 'dashboard.html';
+        window.location.href = 'https://gogamiplay.github.io/gogami/dashboard.html';
     }
 </script>
 </body>
