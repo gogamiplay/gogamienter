@@ -52,16 +52,16 @@
         </div>
 
         <div class="card">
-            <label class="label">Enter Amount (₹200 - ₹5000)</label>
-            <input type="number" id="paymentAmountField" class="amount-input" placeholder="e.g. 500" value="200">
+            <label class="label">Enter Amount (Min ₹1)</label>
+            <input type="number" id="paymentAmountField" class="amount-input" placeholder="e.g. 1" value="1">
             
             <div class="quick-amounts">
+                <button class="quick-btn" onclick="setAmount(1)">+₹1</button>
+                <button class="quick-btn" onclick="setAmount(10)">+₹10</button>
+                <button class="quick-btn" onclick="setAmount(100)">+₹100</button>
                 <button class="quick-btn" onclick="setAmount(200)">+₹200</button>
                 <button class="quick-btn" onclick="setAmount(500)">+₹500</button>
                 <button class="quick-btn" onclick="setAmount(1000)">+₹1000</button>
-                <button class="quick-btn" onclick="setAmount(2000)">+₹2000</button>
-                <button class="quick-btn" onclick="setAmount(3000)">+₹3000</button>
-                <button class="quick-btn" onclick="setAmount(5000)">+₹5000</button>
             </div>
         </div>
     </div>
@@ -93,8 +93,7 @@
             localStorage.setItem('app_user_mobile', activeUserid);
             document.getElementById('mainContainer').style.opacity = '1';
         } else {
-            // Agar userid na mile toh direct dashboard bhej do loop rokne ke liye
-            window.location.href = 'https://gogamiplay.github.io/gogami/dashboard.html';
+            document.getElementById('mainContainer').style.opacity = '1';
         }
     };
 
@@ -128,9 +127,9 @@
     function startSecurePayment() {
         const amountInput = parseFloat(document.getElementById('paymentAmountField').value);
         
-        // Minimum amount validation
-        if (!amountInput || amountInput < 200 || amountInput > 5000) {
-            alert('⚠️ Please enter an amount between ₹200 and ₹5000.');
+        // Testing ke liye minimum amount ₹1 rakha gaya hai
+        if (!amountInput || amountInput < 1) {
+            alert('⚠️ Please enter a valid amount (Minimum ₹1).');
             return;
         }
 
@@ -141,31 +140,18 @@
         const txnid = "TXN" + Date.now();
 
         const options = {
-            "key": "rzp_live_TPW1XP6gyRvQ20", // Aapki live key
+            "key": "rzp_live_TPW1XP6gyRvQ20",
             "amount": amountInput * 100, 
             "currency": "INR",
             "name": "GOGAMI",
             "description": "Wallet Topup",
-            // Sirf UPI allow karne ke liye configuration
             "method": { "netbanking": false, "card": false, "wallet": false, "upi": true },
-            "config": {
-                "display": {
-                    "blocks": { 
-                        "upi_block": { 
-                            "name": "Pay via UPI App", 
-                            "instruments": [{ "method": "upi" }] 
-                        } 
-                    },
-                    "sequence": ["block.upi_block"],
-                    "preferences": { "show_default_blocks": false }
-                }
-            },
             "prefill": {
-                "contact": activeUserid,
+                "contact": activeUserid || "9999999999",
                 "email": "support@gogamiplay.com"
             },
             "notes": {
-                "userid": activeUserid,
+                "userid": activeUserid || "guest",
                 "txnid": txnid
             },
             "handler": function (response) {
@@ -173,7 +159,6 @@
                 payBtn.innerText = "Pay via UPI";
                 showPopup(true, "Payment Successful!", `Payment ID: ${response.razorpay_payment_id}`);
                 
-                // Auto redirect after 2 seconds
                 setTimeout(() => {
                     redirectToDashboard();
                 }, 2000);
