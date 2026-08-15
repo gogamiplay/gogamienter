@@ -33,7 +33,6 @@
         
         .note { font-size: 11px; color: #64748b; text-align: center; line-height: 1.4; margin-top: 15px; font-weight: 600; }
 
-        /* Success Modal Popup Styles */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
         .modal-box { background: #ffffff; width: 85%; max-width: 320px; border-radius: 20px; padding: 25px 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #e2e8f0; }
         .success-icon-circle { width: 64px; height: 64px; background: #ecfdf5; color: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 15px auto; border: 2px solid #a7f3d0; }
@@ -73,12 +72,11 @@
     </div>
 </div>
 
-<!-- Success Modal Popup -->
 <div class="modal-overlay" id="successModalPopup">
     <div class="modal-box">
         <div class="success-icon-circle">✓</div>
         <div class="modal-title">Payment Successful!</div>
-        <div class="modal-desc" id="successPopupDesc">Your payment was captured successfully and wallet balance has been updated.</div>
+        <div class="modal-desc" id="successPopupDesc">Your payment was captured successfully.</div>
         <button class="modal-btn" onclick="redirectToDashboard()">Go to Dashboard</button>
     </div>
 </div>
@@ -98,88 +96,49 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    function setAmount(val) {
-        document.getElementById('paymentAmountField').value = val;
-    }
+    function setAmount(val) { document.getElementById('paymentAmountField').value = val; }
 
-    // 🛑 Smart Auth State Listener (Allows session to sync before deciding to redirect)
-    let authCheckTimeout = setTimeout(() => {
-        if (!auth.currentUser) {
-            window.location.href = 'https://gogamiplay.github.io/gogami/index.html';
-        }
-    }, 2000); // 2 seconds buffer taaki Firebase session properly load ho sake
-
+    // Session Synchronization Buffer
     auth.onAuthStateChanged(user => {
-        clearTimeout(authCheckTimeout);
         if (user) {
-            // User authenticated hai, page show kar do
             document.getElementById('mainContainer').style.opacity = '1';
         } else {
-            // Agar wakai logged-in nahi hai tabhi redirect ho
-            window.location.href = 'https://gogamiplay.github.io/gogami/index.html';
+            setTimeout(() => {
+                if (!auth.currentUser) {
+                    window.location.href = 'https://gogamiplay.github.io/gogami/index.html';
+                } else {
+                    document.getElementById('mainContainer').style.opacity = '1';
+                }
+            }, 3000);
         }
     });
 
     function startSecurePayment() {
-        const amountVal = document.getElementById('paymentAmountField').value.trim();
-        const amount = parseFloat(amountVal);
-
-        if (!amount || amount < 200 || amount > 5000) {
-            alert('⚠️ Please enter an amount between ₹200 and ₹5000.');
-            return;
-        }
-
+        const amount = parseFloat(document.getElementById('paymentAmountField').value);
+        if (!amount || amount < 200 || amount > 5000) { alert('⚠️ Enter amount between ₹200 and ₹5000'); return; }
+        
         const user = auth.currentUser;
-        if (!user) {
-            alert('⚠️ Session expired. Please login again.');
-            window.location.href = 'https://gogamiplay.github.io/gogami/index.html';
-            return;
-        }
+        if (!user) { alert('⚠️ Session active nahi hai.'); return; }
 
         const options = {
-            "key": "YOUR_RAZORPAY_KEY_ID", // Apna Razorpay Key ID yahan daalein
+            "key": "rzp_live_TQ14NQzpq4l3Fc", 
             "amount": amount * 100, 
             "currency": "INR",
             "name": "GOGAMI",
             "description": "Wallet Topup",
-            "image": "https://i.imgur.com/DEFyMFt.png",
-            "method": {
-                "netbanking": false,
-                "card": false,
-                "wallet": false,
-                "emi": false,
-                "upi": true
-            },
+            "method": { "netbanking": false, "card": false, "wallet": false, "upi": true },
             "config": {
                 "display": {
-                    "blocks": {
-                        "banks": {
-                            "name": "Pay via UPI Apps",
-                            "instruments": [
-                                {
-                                    "method": "upi"
-                                }
-                            ]
-                        }
-                    },
+                    "blocks": { "banks": { "name": "Pay via UPI", "instruments": [{ "method": "upi" }] } },
                     "sequence": ["block.banks"],
-                    "preferences": {
-                        "show_default_blocks": false
-                    }
+                    "preferences": { "show_default_blocks": false }
                 }
             },
             "handler": function (response) {
-                document.getElementById('successPopupDesc').innerText = `Payment ID: ${response.razorpay_payment_id}\n₹${amount} added successfully to your wallet.`;
                 document.getElementById('successModalPopup').style.display = 'flex';
             },
-            "notes": {
-                "userId": user.uid
-            },
-            "theme": {
-                "color": "#025922"
-            }
+            "theme": { "color": "#025922" }
         };
-
         const rzp = new Razorpay(options);
         rzp.open();
     }
