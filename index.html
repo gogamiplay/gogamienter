@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOGAMI - Ultimate PC Components</title>
+    <title>GOGAMI - Ultimate PC Components Superstore</title>
     <style>
         :root {
             --primary-blue: #2563eb;
@@ -13,106 +13,176 @@
             --light-gray: #f3f4f6;
             --card-border: #e5e7eb;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--light-gray); color: var(--text-dark); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--light-gray); color: var(--text-dark); overflow-x: hidden; }
         
-        /* Header */
         header { background: var(--bg-white); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary-blue); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        header h1 { color: var(--primary-blue); font-size: 28px; text-transform: uppercase; letter-spacing: 1px; }
-        .cart-info { background: var(--primary-blue); color: #fff; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 14px; }
+        header h1 { color: var(--primary-blue); font-size: 26px; text-transform: uppercase; letter-spacing: 2px; }
+        .cart-info { background: var(--primary-blue); color: #fff; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 14px; }
 
-        /* Navigation */
-        .nav-bar { background: var(--bg-white); padding: 12px 40px; border-bottom: 1px solid var(--card-border); text-align: center; }
-        .nav-bar a { color: var(--text-dark); text-decoration: none; margin: 0 15px; font-size: 15px; font-weight: 500; }
-        .nav-bar a:hover, .nav-bar a.active { color: var(--primary-blue); }
+        .nav-bar { background: var(--bg-white); padding: 12px 40px; border-bottom: 1px solid var(--card-border); text-align: center; overflow-x: auto; white-space: nowrap; }
+        .nav-bar a { color: var(--text-dark); text-decoration: none; margin: 0 12px; font-size: 14px; font-weight: 500; transition: color 0.3s; display: inline-block; }
+        .nav-bar a:hover { color: var(--primary-blue); }
+        .nav-bar a.active { color: var(--primary-blue); border-bottom: 2px solid var(--primary-blue); padding-bottom: 4px; }
 
-        /* Hero Section */
-        .hero { text-align: center; padding: 60px 20px; background: var(--bg-white); }
-        .hero h2 { font-size: 40px; margin-bottom: 10px; color: var(--text-dark); }
-        .hero p { font-size: 18px; color: #6b7280; }
+        .hero { text-align: center; padding: 50px 20px; background: var(--bg-white); border-bottom: 1px solid var(--card-border); }
+        .hero h2 { font-size: 38px; margin-bottom: 10px; color: var(--text-dark); }
+        .hero p { font-size: 16px; color: #6b7280; max-width: 700px; margin: auto; }
 
-        /* Grid */
-        .container { max-width: 1200px; margin: auto; padding: 30px 20px; }
-        .category-title { font-size: 22px; margin: 40px 0 20px 0; color: var(--primary-blue); border-bottom: 2px solid var(--primary-blue); display: inline-block; padding-bottom: 5px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
-        .card { background: var(--bg-white); border-radius: 8px; padding: 20px; text-align: center; border: 1px solid var(--card-border); transition: 0.3s; }
-        .card:hover { box-shadow: 0 10px 15px rgba(0,0,0,0.1); border-color: var(--primary-blue); }
+        .container { max-width: 1450px; margin: auto; padding: 30px 20px; }
+        .category-title { font-size: 24px; margin: 40px 0 20px 0; color: var(--primary-blue); border-left: 5px solid var(--primary-blue); padding-left: 12px; }
         
-        .card h3 { font-size: 16px; margin-bottom: 15px; color: var(--text-dark); height: 45px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .card { background: var(--bg-white); border-radius: 10px; padding: 20px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--card-border); display: flex; flex-direction: column; justify-content: space-between; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15); border-color: var(--primary-blue); }
+        
+        .card h3 { font-size: 17px; margin-bottom: 15px; height: 50px; overflow: hidden; color: var(--text-dark); display: flex; align-items: center; justify-content: center; }
         .price { font-size: 20px; color: var(--primary-blue); font-weight: bold; margin-bottom: 15px; }
         
-        .buy-btn { background: var(--primary-blue); color: #fff; border: none; padding: 10px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; }
+        .buy-btn { background: var(--primary-blue); color: #fff; border: none; padding: 10px 15px; font-size: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: background 0.2s; width: 100%; }
         .buy-btn:hover { background: var(--secondary-blue); }
 
-        /* Footer */
-        footer { text-align: center; padding: 40px; background: #f9fafb; border-top: 1px solid var(--card-border); color: #6b7280; font-size: 14px; }
+        .footer-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 15px; }
+        .footer-links a { color: #6b7280; text-decoration: none; font-size: 13px; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--primary-blue); }
+
+        footer { text-align: center; padding: 40px; background: var(--bg-white); margin-top: 60px; border-top: 1px solid var(--card-border); color: #6b7280; font-size: 14px; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>GOGAMI</h1>
-        <div class="cart-info">Premium Hardware Store</div>
+        <h1>GOGAMI Store</h1>
+        <div class="cart-info">Massive Hardware Catalog</div>
     </header>
 
     <div class="nav-bar">
-        <a href="index.html" class="active">Home</a>
+        <a href="index.html" class="active">🏠 Home</a>
         <a href="about.html">About Us</a>
         <a href="contact.html">Contact</a>
-        <a href="products.html">Products</a>
-        <a href="booking.html">Booking</a>
+        <a href="products.html">Products & Pricing</a>
+        <a href="booking.html">📋 Booking</a>
         <a href="terms.html">Terms</a>
         <a href="privacy.html">Privacy</a>
+        <a href="refund.html">Refund</a>
     </div>
 
     <div class="hero">
-        <h2>GOGAMI Hardware Solutions</h2>
-        <p>Reliable components for your high-performance PC builds.</p>
+        <h2>Ultimate PC Parts Warehouse</h2>
+        <p>Browse through hundreds of high-performance components. Clean text-based catalog for lightning-fast browsing!</p>
     </div>
 
     <div class="container" id="store-container">
-        <!-- Javascript injects content here -->
+        <!-- Javascript will dynamically inject massive product grids -->
     </div>
 
     <footer>
-        <p>&copy; 2026 GOGAMI Enterprises. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact</a>
+            <a href="products.html">Products</a>
+            <a href="booking.html">Booking</a>
+            <a href="terms.html">Terms & Conditions</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="refund.html">Refund Policy</a>
+            <a href="refund.html#shipping-policy">Shipping Policy</a> 
+        </div>
+        <p>&copy; 2026 GOGAMI. All rights reserved. Powered by GitHub Pages.</p>
     </footer>
 
     <script>
+        // FIXED PRICES - Range: ₹200 to ₹5000 (No changes on refresh)
         const storeCatalog = [
             {
-                category: "Essential Components",
+                category: "Accessories & Cables",
                 items: [
-                    { name: "High-Speed HDMI 2.1 Cable", price: 1200 },
-                    { name: "Premium Mouse Pad XL", price: 1800 },
-                    { name: "USB-C Hub 4K", price: 2500 }
+                    { name: "High-Speed HDMI 2.1 Cable (2m)", price: 650 },
+                    { name: "DisplayPort 1.4 Cable Braided", price: 850 },
+                    { name: "Premium Mouse Pad XL", price: 450 },
+                    { name: "USB-C Hub with 4K HDMI", price: 2100 },
+                    { name: "SATA III Cable Kit (5-Pack)", price: 350 },
+                    { name: "Anti-Static Wrist Strap", price: 250 },
+                    { name: "Ethernet Cat6 Cable (5m)", price: 400 },
+                    { name: "VGA to HDMI Active Adapter", price: 750 }
                 ]
             },
             {
-                category: "Cooling & Maintenance",
+                category: "Cooling & Thermal Solutions",
                 items: [
-                    { name: "Thermal Grizzly Paste", price: 1500 },
-                    { name: "120mm RGB Case Fan", price: 1400 },
-                    { name: "M.2 Aluminum Heatsink", price: 1600 }
+                    { name: "Thermal Grizzly Kryonaut Paste", price: 1500 },
+                    { name: "Arctic MX-6 Thermal Paste 4g", price: 800 },
+                    { name: "120mm RGB Case Fan", price: 600 },
+                    { name: "M.2 SSD Aluminum Heatsink", price: 450 },
+                    { name: "CPU Cooler Mounting Kit", price: 350 },
+                    { name: "140mm High Static Pressure Fan", price: 950 },
+                    { name: "DeepCool Gammax CPU Air Cooler", price: 1800 }
+                ]
+            },
+            {
+                category: "Storage & Media (Budget)",
+                items: [
+                    { name: "SanDisk 128GB USB 3.2 Flash Drive", price: 1100 },
+                    { name: "Kingston 240GB SATA SSD", price: 2200 },
+                    { name: "WD Green 500GB NVMe SSD", price: 3800 },
+                    { name: "Crucial BX500 480GB 3D NAND", price: 3200 },
+                    { name: "External 2.5 inch HDD Enclosure", price: 850 },
+                    { name: "SanDisk 64GB MicroSD Card Class 10", price: 650 }
+                ]
+            },
+            {
+                category: "Peripherals (Budget Range)",
+                items: [
+                    { name: "Logitech G102 Wired Gaming Mouse", price: 1600 },
+                    { name: "Razer DeathAdder Essential", price: 1900 },
+                    { name: "Redragon Kumara K552 Keyboard", price: 2900 },
+                    { name: "Zebronics Zeb-Transformer Mouse/KB Combo", price: 1200 },
+                    { name: "Cosmic Byte G4000 Gaming Headset", price: 1500 },
+                    { name: "HyperX SoloCast USB Microphone", price: 4800 },
+                    { name: "Portronics Web Camera HD", price: 1250 }
+                ]
+            },
+            {
+                category: "PC Building Tools & Mods",
+                items: [
+                    { name: "iFixit Essential Electronics Toolkit", price: 3500 },
+                    { name: "Magnetic Screwdriver Set (45 in 1)", price: 900 },
+                    { name: "Cable Management Sleeve Kit", price: 550 },
+                    { name: "ARGB LED Strip (40cm)", price: 500 },
+                    { name: "PSU Cable Extension Kit (White)", price: 2200 },
+                    { name: "Zip Ties & Cable Velcro Pack", price: 200 }
+                ]
+            },
+            {
+                category: "Budget Power & Protection",
+                items: [
+                    { name: "APC Surge Protector 5-Socket", price: 950 },
+                    { name: "Belkin 6-Socket Surge Protector", price: 1400 },
+                    { name: "Ant Esports VS500L Power Supply", price: 2800 },
+                    { name: "DeepCool DE500 V2 PSU", price: 2500 },
+                    { name: "Power Cord Universal (1.5m)", price: 300 }
                 ]
             }
         ];
 
         const container = document.getElementById('store-container');
+
         storeCatalog.forEach((cat) => {
             let catTitle = document.createElement('h2');
             catTitle.className = 'category-title';
             catTitle.innerText = cat.category;
             container.appendChild(catTitle);
+
             let grid = document.createElement('div');
             grid.className = 'grid';
+
             cat.items.forEach((item) => {
                 let card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
                     <h3>${item.name}</h3>
                     <div class="price">₹${item.price.toLocaleString('en-IN')}</div>
-                    <button class="buy-btn" onclick="buyItem('${item.name}', ${item.price})">Buy Now</button>
+                    <button class="buy-btn" onclick="buyItem('${item.name.replace(/'/g, "")}', ${item.price})">Buy Now</button>
                 `;
                 grid.appendChild(card);
             });
