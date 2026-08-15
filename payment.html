@@ -127,7 +127,6 @@
     function startSecurePayment() {
         const amountInput = parseFloat(document.getElementById('paymentAmountField').value);
         
-        // Testing ke liye minimum amount ₹1 rakha gaya hai
         if (!amountInput || amountInput < 1) {
             alert('⚠️ Please enter a valid amount (Minimum ₹1).');
             return;
@@ -145,7 +144,22 @@
             "currency": "INR",
             "name": "GOGAMI",
             "description": "Wallet Topup",
-            "method": { "netbanking": false, "card": false, "wallet": false, "upi": true },
+            "config": {
+                "display": {
+                    "blocks": {
+                        "utr": {
+                            "name": "pay_options",
+                            "instruments": [
+                                { "method": "upi" }
+                            ]
+                        }
+                    },
+                    "sequence": ["block.utr"],
+                    "preferences": {
+                        "show_default_blocks": false
+                    }
+                }
+            },
             "prefill": {
                 "contact": activeUserid || "9999999999",
                 "email": "support@gogamiplay.com"
