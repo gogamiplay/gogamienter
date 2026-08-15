@@ -6,6 +6,10 @@
     <title>GOGAMI - Add Money</title>
     <!-- Razorpay Checkout SDK -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: #f0f6ff; color: #1e293b; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
@@ -83,6 +87,20 @@
 </div>
 
 <script>
+    // Firebase Initialization
+    const firebaseConfig = {
+        apiKey: "AIzaSyDLZdlEN9SEb6Z4dsuuMGsRNIzVBMwky_c",
+        authDomain: "gogami-877be.firebaseapp.com",
+        databaseURL: "https://gogami-877be-default-rtdb.firebaseio.com",
+        projectId: "gogami-877be",
+        storageBucket: "gogami-877be.firebasestorage.app",
+        messagingSenderId: "220921167245",
+        appId: "1:220921167245:web:3ccc8b424e5bc927c291c4",
+        measurementId: "G-2Q572T3D8J"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     let activeUserid = "";
 
     window.onload = function() {
@@ -132,11 +150,21 @@
             return;
         }
 
+        if (!activeUserid || activeUserid === "no-user") {
+            alert('⚠️ User ID not found. Please login from the dashboard first.');
+            window.location.href = 'https://gogamiplay.github.io/gogami/dashboard.html';
+            return;
+        }
+
         const payBtn = document.getElementById('payButton');
         payBtn.disabled = true;
         payBtn.innerText = "Processing...";
 
         const txnid = "TXN" + Date.now();
+        let finalContact = activeUserid;
+        if (!finalContact || finalContact.length !== 10) {
+            finalContact = "9999999999";
+        }
 
         const options = {
             "key": "rzp_live_TQ14NQzpq4l3Fc",
@@ -144,38 +172,58 @@
             "currency": "INR",
             "name": "GOGAMI",
             "description": "Wallet Topup",
-            "config": {
-                "display": {
-                    "blocks": {
-                        "utr": {
-                            "name": "pay_options",
-                            "instruments": [
-                                { "method": "upi" }
-                            ]
-                        }
-                    },
-                    "sequence": ["block.utr"],
-                    "preferences": {
-                        "show_default_blocks": false
-                    }
-                }
-            },
+            "method": { "netbanking": false, "card": false, "wallet": false, "upi": true },
             "prefill": {
-                "contact": activeUserid || "9999999999",
+                "contact": finalContact,
                 "email": "support@gogamiplay.com"
             },
             "notes": {
-                "userid": activeUserid || "guest",
+                "userid": activeUserid,
                 "txnid": txnid
             },
-            "handler": function (response) {
+            "handler": async function (response) {
                 payBtn.disabled = false;
                 payBtn.innerText = "Pay via UPI";
-                showPopup(true, "Payment Successful!", `Payment ID: ${response.razorpay_payment_id}`);
                 
-                setTimeout(() => {
-                    redirectToDashboard();
-                }, 2000);
+                try {
+                    // Firestore update logic for User Balance & Transactions History
+                    const userRef = db.collection('users').doc(activeUserid);
+                    const docSnap = await userRef.get();
+                    
+                    let currentBalance = 0;
+                    if (docSnap.exists) {
+                        currentBalance = Number(docSnap.data().balance) || 0;
+                    }
+                    
+                    const newBalance = currentBalance + amountInput;
+                    
+                    // 1. Update user balance in Firestore
+                    await userRef.set({
+                        balance: newBalance
+                    }, { merge: true });
+
+                    // 2. Add record in transactions collection
+                    await db.collection('transactions').add({
+                        userid: activeUserid,
+                        amount: amountInput,
+                        razorpayPaymentId: response.razorpay_payment_id,
+                        txnid: txnid,
+                        status: "SUCCESS",
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    showPopup(true, "Payment Successful!", `Added ₹${amountInput} to wallet successfully.`);
+                    
+                    setTimeout(() => {
+                        redirectToDashboard();
+                    }, 2000);
+
+                } catch (err) {
+                    console.error("Firestore Error: ", err);
+                    alert("Payment successful, but failed to update balance in database. Please contact support.");
+                    payBtn.disabled = false;
+                    payBtn.innerText = "Pay via UPI";
+                }
             },
             "theme": { "color": "#025922" }
         };
