@@ -44,7 +44,7 @@
 </head>
 <body>
 
-<div class="app-container">
+<div class="app-container" id="mainContainer" style="opacity: 0; transition: opacity 0.3s ease;">
     <div>
         <div class="header">
             <a href="https://gogamiplay.github.io/gogami/dashboard.html" class="back-btn">←</a>
@@ -102,8 +102,20 @@
         document.getElementById('paymentAmountField').value = val;
     }
 
+    // 🛑 Smart Auth State Listener (Allows session to sync before deciding to redirect)
+    let authCheckTimeout = setTimeout(() => {
+        if (!auth.currentUser) {
+            window.location.href = 'https://gogamiplay.github.io/gogami/index.html';
+        }
+    }, 2000); // 2 seconds buffer taaki Firebase session properly load ho sake
+
     auth.onAuthStateChanged(user => {
-        if (!user) {
+        clearTimeout(authCheckTimeout);
+        if (user) {
+            // User authenticated hai, page show kar do
+            document.getElementById('mainContainer').style.opacity = '1';
+        } else {
+            // Agar wakai logged-in nahi hai tabhi redirect ho
             window.location.href = 'https://gogamiplay.github.io/gogami/index.html';
         }
     });
@@ -112,7 +124,6 @@
         const amountVal = document.getElementById('paymentAmountField').value.trim();
         const amount = parseFloat(amountVal);
 
-        // 🛑 Min ₹200 and Max ₹5000 Validation
         if (!amount || amount < 200 || amount > 5000) {
             alert('⚠️ Please enter an amount between ₹200 and ₹5000.');
             return;
@@ -126,13 +137,12 @@
         }
 
         const options = {
-            "key": "rzp_live_TQ14NQzpq4l3Fc", // Apna Razorpay Key ID yahan daalein
+            "key": "YOUR_RAZORPAY_KEY_ID", // Apna Razorpay Key ID yahan daalein
             "amount": amount * 100, 
             "currency": "INR",
             "name": "GOGAMI",
             "description": "Wallet Topup",
             "image": "https://i.imgur.com/DEFyMFt.png",
-            // 🛑 Yeh configuration ensure karegi ki user ko direct UPI apps options milen
             "method": {
                 "netbanking": false,
                 "card": false,
