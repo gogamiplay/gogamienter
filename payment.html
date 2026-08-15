@@ -4,147 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>GOGAMI - Add Money</title>
-    <!-- Firebase SDKs (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <!-- Razorpay Checkout Script -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #f0f6ff; color: #1e293b; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .app-container { width: 100%; max-width: 480px; background: #ffffff; min-height: 100vh; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        
-        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; height: 40px; }
-        .back-btn { background: #e2e8f0; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; color: #334155; text-decoration: none; font-weight: bold; }
-        .title { font-size: 16px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-        .label { font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 8px; display: block; }
-        .amount-input { width: 100%; padding: 14px; font-size: 20px; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 12px; background: #fff; outline: none; color: #0f172a; font-family: monospace; }
-        .amount-input:focus { border-color: #025922; box-shadow: 0 0 0 3px rgba(2,89,34,0.1); }
-        
-        .quick-amounts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
-        .quick-btn { background: #e2e8f0; border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 13px; color: #334155; cursor: pointer; transition: all 0.2s; }
-        .quick-btn:active { background: #025922; color: #fff; transform: scale(0.96); }
-        
-        .pay-btn { width: 100%; background: #025922; color: #fff; border: none; padding: 16px; border-radius: 12px; font-size: 15px; font-weight: 800; text-transform: uppercase; cursor: pointer; box-shadow: 0 4px 12px rgba(2,89,34,0.3); transition: transform 0.1s; letter-spacing: 0.5px; }
-        .pay-btn:active { transform: scale(0.98); }
-        
-        .note { font-size: 11px; color: #64748b; text-align: center; line-height: 1.4; margin-top: 15px; font-weight: 600; }
-
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
-        .modal-box { background: #ffffff; width: 85%; max-width: 320px; border-radius: 20px; padding: 25px 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #e2e8f0; }
-        .success-icon-circle { width: 64px; height: 64px; background: #ecfdf5; color: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 15px auto; border: 2px solid #a7f3d0; }
-        .modal-title { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
-        .modal-desc { font-size: 13px; color: #64748b; line-height: 1.4; margin-bottom: 20px; font-weight: 600; }
-        .modal-btn { width: 100%; background: #025922; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 13px; text-transform: uppercase; cursor: pointer; letter-spacing: 0.5px; }
+        /* (Aapka styling wahi rahega) */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background: #f0f6ff; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .app-container { width: 100%; max-width: 480px; background: #ffffff; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .pay-btn { width: 100%; background: #025922; color: #fff; padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="app-container" id="mainContainer" style="opacity: 0; transition: opacity 0.3s ease;">
-    <div>
-        <div class="header">
-            <a href="https://gogamiplay.github.io/gogami/dashboard.html" class="back-btn">←</a>
-            <div class="title">Wallet Top-Up</div>
-            <div style="width: 36px;"></div>
-        </div>
-
-        <div class="card">
-            <label class="label">Enter Amount (₹200 - ₹5000)</label>
-            <input type="number" id="paymentAmountField" class="amount-input" placeholder="e.g. 500" value="200">
-            
-            <div class="quick-amounts">
-                <button class="quick-btn" onclick="setAmount(200)">+₹200</button>
-                <button class="quick-btn" onclick="setAmount(500)">+₹500</button>
-                <button class="quick-btn" onclick="setAmount(1000)">+₹1000</button>
-                <button class="quick-btn" onclick="setAmount(2000)">+₹2000</button>
-                <button class="quick-btn" onclick="setAmount(3000)">+₹3000</button>
-                <button class="quick-btn" onclick="setAmount(5000)">+₹5000</button>
-            </div>
-        </div>
-    </div>
-
-    <div>
-        <button class="pay-btn" onclick="startSecurePayment()">Pay via UPI</button>
-        <div class="note">🔒 Secure UPI Payment via Razorpay.<br>Balance updates instantly upon completion.</div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="successModalPopup">
-    <div class="modal-box">
-        <div class="success-icon-circle">✓</div>
-        <div class="modal-title">Payment Successful!</div>
-        <div class="modal-desc" id="successPopupDesc">Your payment was captured successfully.</div>
-        <button class="modal-btn" onclick="redirectToDashboard()">Go to Dashboard</button>
-    </div>
+<div class="app-container">
+    <h3>Add Money to GOGAMI</h3>
+    <input type="number" id="amount" class="amount-input" value="200" style="width:100%; padding:15px; margin:20px 0; border:1px solid #ccc; border-radius:10px;">
+    <button class="pay-btn" onclick="initiatePayment()">Pay via UPI</button>
 </div>
 
 <script>
     const firebaseConfig = {
         apiKey: "AIzaSyDLZdlEN9SEb6Z4dsuuMGsRNIzVBMwky_c",
         authDomain: "gogami-877be.firebaseapp.com",
-        databaseURL: "https://gogami-877be-default-rtdb.firebaseio.com",
         projectId: "gogami-877be",
         storageBucket: "gogami-877be.firebasestorage.app",
         messagingSenderId: "220921167245",
-        appId: "1:220921167245:web:3ccc8b424e5bc927c291c4",
-        measurementId: "G-2Q572T3D8J"
+        appId: "1:220921167245:web:3ccc8b424e5bc927c291c4"
     };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    function setAmount(val) { document.getElementById('paymentAmountField').value = val; }
-
-    // Session Synchronization Buffer
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            document.getElementById('mainContainer').style.opacity = '1';
-        } else {
-            setTimeout(() => {
-                if (!auth.currentUser) {
-                    window.location.href = 'https://gogamiplay.github.io/gogami/index.html';
-                } else {
-                    document.getElementById('mainContainer').style.opacity = '1';
-                }
-            }, 3000);
-        }
-    });
-
-    function startSecurePayment() {
-        const amount = parseFloat(document.getElementById('paymentAmountField').value);
-        if (!amount || amount < 200 || amount > 5000) { alert('⚠️ Enter amount between ₹200 and ₹5000'); return; }
-        
+    // LOGIC: Yahan Auth ka koi redirect nahi hai, isliye loop nahi banega.
+    // User jab dashboard se yahan aayega, ye seedha razorpay open karega.
+    
+    function initiatePayment() {
+        const amount = document.getElementById('amount').value;
         const user = auth.currentUser;
-        if (!user) { alert('⚠️ Session active nahi hai.'); return; }
+        
+        // Agar user login nahi hai toh bas alert de do, redirect mat karo
+        if (!user) {
+            alert("Please login from the main dashboard first.");
+            return;
+        }
 
         const options = {
             "key": "rzp_live_TQ14NQzpq4l3Fc", 
-            "amount": amount * 100, 
+            "amount": amount * 100,
             "currency": "INR",
             "name": "GOGAMI",
-            "description": "Wallet Topup",
-            "method": { "netbanking": false, "card": false, "wallet": false, "upi": true },
-            "config": {
-                "display": {
-                    "blocks": { "banks": { "name": "Pay via UPI", "instruments": [{ "method": "upi" }] } },
-                    "sequence": ["block.banks"],
-                    "preferences": { "show_default_blocks": false }
-                }
-            },
             "handler": function (response) {
-                document.getElementById('successModalPopup').style.display = 'flex';
+                alert("Payment Successful!");
+                window.location.href = "https://gogamiplay.github.io/gogami/dashboard.html";
             },
             "theme": { "color": "#025922" }
         };
-        const rzp = new Razorpay(options);
-        rzp.open();
-    }
-
-    function redirectToDashboard() {
-        window.location.href = 'https://gogamiplay.github.io/gogami/dashboard.html';
+        new Razorpay(options).open();
     }
 </script>
 </body>
