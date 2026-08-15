@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOGAMI - Secure Checkout & Payment</title>
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --secondary-blue: #1e40af;
+            --bg-white: #ffffff;
+            --text-dark: #1f2937;
+            --light-gray: #f3f4f6;
+            --card-border: #e5e7eb;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--light-gray); color: var(--text-dark); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .checkout-box { background: var(--bg-white); width: 100%; max-width: 500px; padding: 30px; border-radius: 12px; border: 1px solid var(--card-border); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        h2 { color: var(--primary-blue); margin-bottom: 20px; text-align: center; }
+        
+        .order-summary { background: var(--light-gray); padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid var(--card-border); }
+        .order-summary p { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 15px; color: #6b7280; }
+        .total { font-weight: bold; color: var(--primary-blue) !important; font-size: 18px !important; border-top: 1px solid var(--card-border); padding-top: 8px; margin-top: 5px; }
+
+        .upi-section { text-align: center; margin-bottom: 20px; }
+        .upi-id { background: var(--light-gray); padding: 10px; border-radius: 6px; font-weight: bold; color: var(--primary-blue); margin: 10px 0; font-size: 17px; letter-spacing: 1px; border: 1px solid var(--card-border); }
+        
+        .qr-box { background: #fff; padding: 12px; display: inline-block; border-radius: 8px; margin: 10px 0; border: 1px solid var(--card-border); }
+        .qr-box img { width: 160px; height: 160px; display: block; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: #4b5563; font-size: 14px; font-weight: 500; }
+        .form-group input { width: 100%; padding: 11px; background: var(--light-gray); border: 1px solid var(--card-border); border-radius: 6px; color: var(--text-dark); font-size: 15px; }
+        .form-group input:focus { outline: none; border-color: var(--primary-blue); background: var(--bg-white); }
+
+        .submit-btn { background: var(--primary-blue); color: #fff; border: none; padding: 13px; width: 100%; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
+        .submit-btn:hover { background: var(--secondary-blue); }
+        
+        .back-link { display: block; text-align: center; margin-top: 15px; color: #6b7280; text-decoration: none; font-size: 14px; font-weight: 500; }
+        .back-link:hover { color: var(--primary-blue); }
+    </style>
+</head>
+<body>
+
+    <div class="checkout-box">
+        <h2>Complete Your Payment</h2>
+        
+        <div class="order-summary">
+            <p><span>Product:</span> <strong id="product-name" style="color:var(--text-dark);">Loading...</strong></p>
+            <p class="total"><span>Total Amount:</span> <span id="product-price">₹0</span></p>
+        </div>
+
+        <div class="upi-section">
+            <p style="color: #6b7280; font-size: 14px;">Scan QR code or pay directly to UPI ID:</p>
+            <div class="upi-id">9113224019@ybl</div>
+            
+            <div class="qr-box">
+                <img id="qr-code-img" src="" alt="UPI QR Code">
+            </div>
+        </div>
+
+        <form onsubmit="handlePaymentSubmit(event)">
+            <div class="form-group">
+                <label for="utr">Enter UTR / Transaction Reference Number:</label>
+                <input type="text" id="utr" placeholder="e.g., 432109876543" required>
+            </div>
+            <button type="submit" class="submit-btn">Verify & Submit Payment</button>
+        </form>
+
+        <a href="checkout.html" class="back-link">&larr; Back to Information</a>
+    </div>
+
+    <script>
+        const itemName = localStorage.getItem('selectedItem') || 'Custom PC Part';
+        const itemPrice = localStorage.getItem('selectedPrice') || '5000';
+
+        document.getElementById('product-name').innerText = itemName;
+        document.getElementById('product-price').innerText = '₹' + Number(itemPrice).toLocaleString('en-IN');
+
+        const upiID = "9113224019@ybl";
+        const payeeName = "GOGAMI Store";
+        const upiUri = `upi://pay?pa=${upiID}&pn=${encodeURIComponent(payeeName)}&am=${itemPrice}&cu=INR`;
+        
+        document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(upiUri)}`;
+
+        function handlePaymentSubmit(event) {
+            event.preventDefault();
+            const utr = document.getElementById('utr').value;
+            if(utr.length < 8) {
+                alert("Please enter a valid UTR number.");
+                return;
+            }
+            alert("Payment details submitted successfully! Order for " + itemName + " is confirmed.");
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
