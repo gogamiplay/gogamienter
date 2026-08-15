@@ -56,16 +56,16 @@
         </div>
 
         <div class="card">
-            <label class="label">Enter Amount (Min ₹1)</label>
-            <input type="number" id="paymentAmountField" class="amount-input" placeholder="e.g. 1" value="1">
+            <label class="label">Enter Amount (Min ₹200)</label>
+            <input type="number" id="paymentAmountField" class="amount-input" placeholder="e.g. 200" value="200">
             
             <div class="quick-amounts">
-                <button class="quick-btn" onclick="setAmount(1)">+₹1</button>
-                <button class="quick-btn" onclick="setAmount(10)">+₹10</button>
-                <button class="quick-btn" onclick="setAmount(100)">+₹100</button>
                 <button class="quick-btn" onclick="setAmount(200)">+₹200</button>
                 <button class="quick-btn" onclick="setAmount(500)">+₹500</button>
                 <button class="quick-btn" onclick="setAmount(1000)">+₹1000</button>
+                <button class="quick-btn" onclick="setAmount(2000)">+₹2000</button>
+                <button class="quick-btn" onclick="setAmount(3000)">+₹3000</button>
+                <button class="quick-btn" onclick="setAmount(5000)">+₹5000</button>
             </div>
         </div>
     </div>
@@ -145,8 +145,8 @@
     function startSecurePayment() {
         const amountInput = parseFloat(document.getElementById('paymentAmountField').value);
         
-        if (!amountInput || amountInput < 1) {
-            alert('⚠️ Please enter a valid amount (Minimum ₹1).');
+        if (!amountInput || amountInput < 200) {
+            alert('⚠️ Please enter a valid amount (Minimum ₹200).');
             return;
         }
 
@@ -158,7 +158,7 @@
 
         const payBtn = document.getElementById('payButton');
         payBtn.disabled = true;
-        payBtn.innerText = "Processing...";
+        payBtn.style.display = 'none'; // 🚀 Payment start hote hi button hide ho jayega
 
         const txnid = "TXN" + Date.now();
         let finalContact = activeUserid;
@@ -182,9 +182,6 @@
                 "txnid": txnid
             },
             "handler": async function (response) {
-                payBtn.disabled = false;
-                payBtn.innerText = "Pay via UPI";
-                
                 try {
                     // Firestore update logic for User Balance & Transactions History
                     const userRef = db.collection('users').doc(activeUserid);
@@ -212,15 +209,13 @@
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
 
+                    // 🚀 Success popup aane par button hidden hi rahega jab tak user dashboard na chala jaye
                     showPopup(true, "Payment Successful!", `Added ₹${amountInput} to wallet successfully.`);
-                    
-                    setTimeout(() => {
-                        redirectToDashboard();
-                    }, 2000);
 
                 } catch (err) {
                     console.error("Firestore Error: ", err);
                     alert("Payment successful, but failed to update balance in database. Please contact support.");
+                    payBtn.style.display = 'block';
                     payBtn.disabled = false;
                     payBtn.innerText = "Pay via UPI";
                 }
@@ -231,6 +226,7 @@
         const rzp = new Razorpay(options);
 
         rzp.on('payment.failed', function (response) {
+            payBtn.style.display = 'block'; // Agar fail ho jaye toh button wapas dikhega
             payBtn.disabled = false;
             payBtn.innerText = "Pay via UPI";
             showPopup(false, "Payment Failed", response.error.description || "The transaction could not be completed. Please try again.");
@@ -239,6 +235,7 @@
         try {
             rzp.open();
         } catch(e) {
+            payBtn.style.display = 'block';
             payBtn.disabled = false;
             payBtn.innerText = "Pay via UPI";
             alert("Could not open gateway. Please try again.");
