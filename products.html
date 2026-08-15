@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products & Pricing - GOGAMI</title>
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --secondary-blue: #1e40af;
+            --bg-white: #ffffff;
+            --text-dark: #1f2937;
+            --light-gray: #f3f4f6;
+            --card-border: #e5e7eb;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--light-gray); color: var(--text-dark); overflow-x: hidden; }
+        
+        header { background: var(--bg-white); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary-blue); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        header h1 { color: var(--primary-blue); font-size: 26px; text-transform: uppercase; letter-spacing: 2px; }
+        .nav-links a { color: var(--text-dark); text-decoration: none; margin-left: 25px; font-size: 15px; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary-blue); }
+
+        .container { max-width: 1450px; margin: auto; padding: 30px 20px; }
+        .category-title { font-size: 24px; margin: 40px 0 20px 0; color: var(--primary-blue); border-left: 5px solid var(--primary-blue); padding-left: 12px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .card { background: var(--bg-white); border-radius: 10px; padding: 20px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--card-border); display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15); border-color: var(--primary-blue); }
+        
+        .card h3 { font-size: 17px; margin-bottom: 15px; height: 50px; overflow: hidden; color: var(--text-dark); display: flex; align-items: center; justify-content: center; }
+        .price { font-size: 20px; color: var(--primary-blue); font-weight: bold; margin-bottom: 15px; }
+        
+        .buy-btn { background: var(--primary-blue); color: #fff; border: none; padding: 10px 15px; font-size: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: background 0.2s; width: 100%; }
+        .buy-btn:hover { background: var(--secondary-blue); }
+
+        footer { text-align: center; padding: 40px; background: var(--bg-white); margin-top: 60px; border-top: 1px solid var(--card-border); color: #6b7280; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>GOGAMI Store</h1>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="products.html">Products</a>
+            <a href="booking.html">Login/Booking</a>
+        </div>
+    </header>
+
+    <div class="container" id="products-container">
+        <!-- Javascript will inject product catalog -->
+    </div>
+
+    <footer>
+        <p>&copy; 2026 GOGAMI. All rights reserved. Powered by GitHub Pages.</p>
+    </footer>
+
+    <script>
+        // FIXED PRICES - Range: ₹200 to ₹5000 (No changes on refresh)
+        const storeCatalog = [
+            {
+                category: "Processors & Cooling Components",
+                items: [
+                    { name: "Intel Core i3 Budget Cooling Fan", price: 850 },
+                    { name: "AMD Ryzen Thermal Heat Sink", price: 1200 },
+                    { name: "Thermal Grizzly Kryonaut Paste", price: 1500 },
+                    { name: "Arctic MX-6 Thermal Paste 4g", price: 800 },
+                    { name: "120mm RGB Case Fan", price: 600 },
+                    { name: "DeepCool Gammax CPU Air Cooler", price: 1800 }
+                ]
+            },
+            {
+                category: "Graphics Accessories & Display Cables",
+                items: [
+                    { name: "High-Speed HDMI 2.1 Cable (2m)", price: 650 },
+                    { name: "DisplayPort 1.4 Cable Braided", price: 850 },
+                    { name: "VGA to HDMI Active Adapter", price: 750 },
+                    { name: "GPU Anti-Sag Support Bracket", price: 950 },
+                    { name: "External 2.5 inch HDD Enclosure", price: 850 }
+                ]
+            },
+            {
+                category: "Motherboard & Wiring Accessories",
+                items: [
+                    { name: "SATA III Cable Kit (5-Pack)", price: 350 },
+                    { name: "Anti-Static Wrist Strap", price: 250 },
+                    { name: "Ethernet Cat6 Cable (5m)", price: 400 },
+                    { name: "Cable Management Sleeve Kit", price: 550 },
+                    { name: "PSU Cable Extension Kit (White)", price: 2200 },
+                    { name: "Zip Ties & Cable Velcro Pack", price: 200 }
+                ]
+            },
+            {
+                category: "Memory & Storage Solutions",
+                items: [
+                    { name: "SanDisk 128GB USB 3.2 Flash Drive", price: 1100 },
+                    { name: "SanDisk 64GB MicroSD Card Class 10", price: 650 },
+                    { name: "M.2 SSD Aluminum Heatsink", price: 450 },
+                    { name: "Kingston 240GB SATA SSD", price: 2200 },
+                    { name: "Crucial BX500 480GB 3D NAND", price: 3200 }
+                ]
+            }
+        ];
+
+        const container = document.getElementById('products-container');
+
+        storeCatalog.forEach((cat) => {
+            let catTitle = document.createElement('h2');
+            catTitle.className = 'category-title';
+            catTitle.innerText = cat.category;
+            container.appendChild(catTitle);
+
+            let grid = document.createElement('div');
+            grid.className = 'grid';
+
+            cat.items.forEach((item) => {
+                let card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <h3>${item.name}</h3>
+                    <div class="price">₹${item.price.toLocaleString('en-IN')}</div>
+                    <button class="buy-btn" onclick="buyItem('${item.name.replace(/'/g, "")}', ${item.price})">Buy Now</button>
+                `;
+                grid.appendChild(card);
+            });
+            container.appendChild(grid);
+        });
+
+        function buyItem(name, price) {
+            localStorage.setItem('selectedItem', name);
+            localStorage.setItem('selectedPrice', price);
+            window.location.href = 'checkout.html';
+        }
+    </script>
+</body>
+</html>
