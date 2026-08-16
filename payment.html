@@ -99,6 +99,7 @@
         measurementId: "G-2Q572T3D8J"
     };
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.firestore();
 
     let activeUserid = "";
@@ -199,9 +200,10 @@
                         balance: newBalance
                     }, { merge: true });
 
-                    // 2. Add record in transactions collection
+                    // 2. Add record in transactions collection (userid और userId दोनों fields जोड़े गए हैं ताकि admin.html में कभी मिसमैच न हो)
                     await db.collection('transactions').add({
                         userid: activeUserid,
+                        userId: activeUserid,
                         amount: amountInput,
                         razorpayPaymentId: response.razorpay_payment_id,
                         txnid: txnid,
@@ -209,7 +211,7 @@
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
 
-                    // 🚀 Success popup aane par button hidden hi rahega jab तक user dashboard na chala jaye
+                    // 🚀 Success popup aane par button hidden hi rahega jab tak user dashboard na chala jaye
                     showPopup(true, "Payment Successful!", `Added ₹${amountInput} to wallet successfully.`);
 
                 } catch (err) {
