@@ -34,6 +34,12 @@
         
         .note { font-size: 11px; color: #64748b; text-align: center; line-height: 1.4; margin-top: 15px; font-weight: 600; }
 
+        /* Loading Spinner Overlay */
+        #depositLoadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(2, 89, 34, 0.92); z-index: 6000; flex-direction: column; justify-content: center; align-items: center; color: #ffffff; }
+        .spinner-circle { width: 50px; height: 50px; border: 5px solid rgba(255, 255, 255, 0.3); border-top: 5px solid #ffffff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .deposit-loading-text { font-size: 14px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+
         /* Modal Styles */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
         .modal-box { background: #ffffff; width: 85%; max-width: 320px; border-radius: 20px; padding: 25px 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #e2e8f0; }
@@ -46,6 +52,11 @@
     </style>
 </head>
 <body>
+
+<div id="depositLoadingOverlay">
+    <div class="spinner-circle"></div>
+    <div class="deposit-loading-text">Verifying Payment...</div>
+</div>
 
 <div class="app-container" id="mainContainer" style="opacity: 0; transition: opacity 0.3s ease;">
     <div>
@@ -121,6 +132,7 @@
     }
 
     function showPopup(isSuccess, title, desc) {
+        document.getElementById('depositLoadingOverlay').style.display = 'none'; // Spinner hata do
         const modal = document.getElementById('statusModalPopup');
         const iconCircle = document.getElementById('modalIconCircle');
         const titleText = document.getElementById('modalTitleText');
@@ -159,7 +171,7 @@
 
         const payBtn = document.getElementById('payButton');
         payBtn.disabled = true;
-        payBtn.style.display = 'none'; // 🚀 Payment start hote hi button hide ho jayega
+        payBtn.style.display = 'none'; 
 
         const txnid = "TXN" + Date.now();
         let finalContact = activeUserid;
@@ -183,24 +195,12 @@
                 "txnid": txnid
             },
             "handler": async function (response) {
-                try {
-                    // Firestore update logic for User Balance & Transactions History
-                    const userRef = db.collection('users').doc(activeUserid);
-                    const docSnap = await userRef.get();
-                    
-                    let currentBalance = 0;
-                    if (docSnap.exists) {
-                        currentBalance = Number(docSnap.data().balance) || 0;
-                    }
-                    
-                    const newBalance = currentBalance + amountInput;
-                    
-                    // 1. Update user balance in Firestore
-                    await userRef.set({
-                        balance: newBalance
-                    }, { merge: true });
+                // 🚀 Payment successful hote hi loading spinner dikhao jab tak transaction log na ho jaye
+                document.getElementById('depositLoadingOverlay').style.display = 'flex';
 
-                    // 2. Add record in transactions collection (userid और userId दोनों fields जोड़े गए हैं ताकि admin.html में कभी मिसमैच न हो)
+                try {
+                    // 1. Add record in transactions collection 
+                    // (Balance update karne ka kaam ab server-side index.js Webhook karega taaki double na ho)
                     await db.collection('transactions').add({
                         userid: activeUserid,
                         userId: activeUserid,
@@ -211,12 +211,15 @@
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
 
-                    // 🚀 Success popup aane par button hidden hi rahega jab tak user dashboard na chala jaye
-                    showPopup(true, "Payment Successful!", `Added ₹${amountInput} to wallet successfully.`);
+                    // Thoda sa gap dekar success popup dikhao
+                    setTimeout(() => {
+                        showPopup(true, "Payment Successful!", `Added ₹${amountInput} to wallet successfully.`);
+                    }, 1000);
 
                 } catch (err) {
                     console.error("Firestore Error: ", err);
-                    alert("Payment successful, but failed to update balance in database. Please contact support.");
+                    document.getElementById('depositLoadingOverlay').style.display = 'none';
+                    alert("Payment successful, but failed to log transaction. Please contact support.");
                     payBtn.style.display = 'block';
                     payBtn.disabled = false;
                     payBtn.innerText = "Pay via UPI";
@@ -228,7 +231,8 @@
         const rzp = new Razorpay(options);
 
         rzp.on('payment.failed', function (response) {
-            payBtn.style.display = 'block'; // Agar fail ho jaye toh button wapas dikhega
+            document.getElementById('depositLoadingOverlay').style.display = 'none';
+            payBtn.style.display = 'block'; 
             payBtn.disabled = false;
             payBtn.innerText = "Pay via UPI";
             showPopup(false, "Payment Failed", response.error.description || "The transaction could not be completed. Please try again.");
@@ -237,6 +241,7 @@
         try {
             rzp.open();
         } catch(e) {
+            document.getElementById('depositLoadingOverlay').style.display = 'none';
             payBtn.style.display = 'block';
             payBtn.disabled = false;
             payBtn.innerText = "Pay via UPI";
