@@ -195,35 +195,16 @@
                 "txnid": txnid
             },
             "handler": async function (response) {
-                // 🚀 Payment successful hote hi loading spinner dikhao jab tak transaction log na ho jaye
+                // 🚀 Payment successful hote hi loading spinner dikhao
                 document.getElementById('depositLoadingOverlay').style.display = 'flex';
 
-                try {
-                    // 1. Add record in transactions collection 
-                    // (Balance update karne ka kaam ab server-side index.js Webhook karega taaki double na ho)
-                    await db.collection('transactions').add({
-                        userid: activeUserid,
-                        userId: activeUserid,
-                        amount: amountInput,
-                        razorpayPaymentId: response.razorpay_payment_id,
-                        txnid: txnid,
-                        status: "SUCCESS",
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
+                // 🚀 Yahan se front-end ki transactions.add() wali entry hata di gayi hai 
+                // taaki webhook (index.js) ke sath milkar duplicate (double) entry passbook mein na aaye.
+                // Ab sirf server-side webhook hi passbook mein entry banega aur balance add karega.
 
-                    // Thoda sa gap dekar success popup dikhao
-                    setTimeout(() => {
-                        showPopup(true, "Payment Successful!", `Added ₹${amountInput} to wallet successfully.`);
-                    }, 1000);
-
-                } catch (err) {
-                    console.error("Firestore Error: ", err);
-                    document.getElementById('depositLoadingOverlay').style.display = 'none';
-                    alert("Payment successful, but failed to log transaction. Please contact support.");
-                    payBtn.style.display = 'block';
-                    payBtn.disabled = false;
-                    payBtn.innerText = "Pay via UPI";
-                }
+                setTimeout(() => {
+                    showPopup(true, "Payment Successful!", `Added ₹${amountInput} to wallet successfully.`);
+                }, 1500);
             },
             "theme": { "color": "#025922" }
         };
