@@ -15,10 +15,15 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--light-gray); color: var(--text-dark); overflow-x: hidden; }
-        
+
         header { background: var(--bg-white); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary-blue); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         header h1 { color: var(--primary-blue); font-size: 26px; text-transform: uppercase; letter-spacing: 2px; }
+        
+        /* Updated Wallet Header Section */
+        .wallet-header-container { display: flex; align-items: center; gap: 12px; }
         .cart-info { background: var(--primary-blue); color: #fff; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 14px; }
+        .add-btn { background: var(--primary-blue); color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 14px; cursor: pointer; transition: background 0.2s; }
+        .add-btn:hover { background: var(--secondary-blue); }
 
         .nav-bar { background: var(--bg-white); padding: 12px 40px; border-bottom: 1px solid var(--card-border); text-align: center; overflow-x: auto; white-space: nowrap; }
         .nav-bar a { color: var(--text-dark); text-decoration: none; margin: 0 12px; font-size: 14px; font-weight: 500; transition: color 0.3s; display: inline-block; }
@@ -31,14 +36,14 @@
 
         .container { max-width: 1450px; margin: auto; padding: 30px 20px; }
         .category-title { font-size: 24px; margin: 40px 0 20px 0; color: var(--primary-blue); border-left: 5px solid var(--primary-blue); padding-left: 12px; }
-        
+
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
         .card { background: var(--bg-white); border-radius: 10px; padding: 20px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--card-border); display: flex; flex-direction: column; justify-content: space-between; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15); border-color: var(--primary-blue); }
-        
+
         .card h3 { font-size: 17px; margin-bottom: 15px; height: 50px; overflow: hidden; color: var(--text-dark); display: flex; align-items: center; justify-content: center; }
         .price { font-size: 20px; color: var(--primary-blue); font-weight: bold; margin-bottom: 15px; }
-        
+
         .buy-btn { background: var(--primary-blue); color: #fff; border: none; padding: 10px 15px; font-size: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: background 0.2s; width: 100%; }
         .buy-btn:hover { background: var(--secondary-blue); }
 
@@ -53,7 +58,10 @@
 
     <header>
         <h1>GOGAMI Store</h1>
-        <div class="cart-info">Massive Hardware Catalog</div>
+        <div class="wallet-header-container">
+            <div class="cart-info">Store Wallet Balance: ₹<span id="wallet-balance">0</span></div>
+            <button class="add-btn" onclick="handleDepositLogin()">+ Add</button>
+        </div>
     </header>
 
     <div class="nav-bar">
@@ -73,7 +81,7 @@
     </div>
 
     <div class="container" id="store-container">
-        <!-- Javascript will dynamically inject massive product grids -->
+        <!-- Javascript will dynamically inject product grids -->
     </div>
 
     <footer>
@@ -92,7 +100,26 @@
     </footer>
 
     <script>
-        // FIXED PRICES - Range: ₹200 to ₹5000 (No changes on refresh)
+        // Wallet Balance Initialization
+        if (!localStorage.getItem('wallet')) {
+            localStorage.setItem('wallet', 0);
+        }
+        document.getElementById('wallet-balance').innerText = localStorage.getItem('wallet');
+
+        // Gmail Login Logic for Deposit Button
+        function handleDepositLogin() {
+            let email = prompt("Please enter your Gmail account to login:");
+            if (email) {
+                if (email.trim().toLowerCase().endsWith("@gmail.com")) {
+                    alert("Login Successful with " + email);
+                    window.location.href = 'deposit.html';
+                } else {
+                    alert("Please enter a valid Gmail address ending with @gmail.com");
+                }
+            }
+        }
+
+        // FIXED PRICES - Range: ₹200 to ₹5000 (Original products + 25-30 New Products)
         const storeCatalog = [
             {
                 category: "Accessories & Cables",
@@ -104,7 +131,10 @@
                     { name: "SATA III Cable Kit (5-Pack)", price: 350 },
                     { name: "Anti-Static Wrist Strap", price: 250 },
                     { name: "Ethernet Cat6 Cable (5m)", price: 400 },
-                    { name: "VGA to HDMI Active Adapter", price: 750 }
+                    { name: "VGA to HDMI Active Adapter", price: 750 },
+                    { name: "USB 3.0 Extension Cable 1.5m", price: 350 },
+                    { name: "Bluetooth 5.0 USB Dongle", price: 450 },
+                    { name: "RJ45 Coupler Female-Female", price: 250 }
                 ]
             },
             {
@@ -116,7 +146,10 @@
                     { name: "M.2 SSD Aluminum Heatsink", price: 450 },
                     { name: "CPU Cooler Mounting Kit", price: 350 },
                     { name: "140mm High Static Pressure Fan", price: 950 },
-                    { name: "DeepCool Gammax CPU Air Cooler", price: 1800 }
+                    { name: "DeepCool Gammax CPU Air Cooler", price: 1800 },
+                    { name: "Thermal Pad 1mm (100x100mm)", price: 400 },
+                    { name: "Case Speaker Buzzer", price: 200 },
+                    { name: "PWM Fan Splitter Cable 1-to-3", price: 300 }
                 ]
             },
             {
@@ -127,7 +160,10 @@
                     { name: "WD Green 500GB NVMe SSD", price: 3800 },
                     { name: "Crucial BX500 480GB 3D NAND", price: 3200 },
                     { name: "External 2.5 inch HDD Enclosure", price: 850 },
-                    { name: "SanDisk 64GB MicroSD Card Class 10", price: 650 }
+                    { name: "SanDisk 64GB MicroSD Card Class 10", price: 650 },
+                    { name: "Internal HDD Bracket 3.5 to 2.5", price: 250 },
+                    { name: "M.2 NVMe Screw & StandOff Kit", price: 200 },
+                    { name: "SATA to USB 3.0 Adapter Cable", price: 600 }
                 ]
             },
             {
@@ -139,7 +175,10 @@
                     { name: "Zebronics Zeb-Transformer Mouse/KB Combo", price: 1200 },
                     { name: "Cosmic Byte G4000 Gaming Headset", price: 1500 },
                     { name: "HyperX SoloCast USB Microphone", price: 4800 },
-                    { name: "Portronics Web Camera HD", price: 1250 }
+                    { name: "Portronics Web Camera HD", price: 1250 },
+                    { name: "Aluminum Headphone Stand", price: 700 },
+                    { name: "Mechanical Keycap Puller Tool", price: 200 },
+                    { name: "Webcam Privacy Cover Slider", price: 200 }
                 ]
             },
             {
@@ -150,7 +189,9 @@
                     { name: "Cable Management Sleeve Kit", price: 550 },
                     { name: "ARGB LED Strip (40cm)", price: 500 },
                     { name: "PSU Cable Extension Kit (White)", price: 2200 },
-                    { name: "Zip Ties & Cable Velcro Pack", price: 200 }
+                    { name: "Zip Ties & Cable Velcro Pack", price: 200 },
+                    { name: "Blue LED Case Strip 2m", price: 400 },
+                    { name: "Thermal Paste Spreader Applicator", price: 250 }
                 ]
             },
             {
