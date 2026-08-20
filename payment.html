@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>GOGAMI - Add Money</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #f0f6ff; color: #1e293b; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .app-container { width: 100%; max-width: 480px; background: #ffffff; min-height: 100vh; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; height: 40px; }
+        .back-btn { background: #e2e8f0; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; color: #334155; text-decoration: none; font-weight: bold; }
+        .title { font-size: 16px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 30px 20px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); text-align: center; }
+        
+        .warning-icon { font-size: 48px; margin-bottom: 15px; }
+        .closed-title { font-size: 16px; font-weight: 800; color: #dc2626; text-transform: uppercase; margin-bottom: 10px; }
+        .closed-desc { font-size: 14px; color: #64748b; line-height: 1.5; font-weight: 600; }
+        
+        .footer-note { font-size: 11px; color: #64748b; text-align: center; line-height: 1.4; margin-top: 15px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="mainContainer">
+    <div>
+        <div class="header">
+            <a href="https://gogamiplay.github.io/gogami/dashboard.html" class="back-btn" id="backLink">←</a>
+            <div class="title">Wallet Top-Up</div>
+            <div style="width: 36px;"></div>
+        </div>
+
+        <div class="card">
+            <div class="warning-icon">⚠️</div>
+            <div class="closed-title">Notice</div>
+            <div class="closed-desc">Deposit currently closed for technical issue. Please come back later.</div>
+        </div>
+    </div>
+
+    <div>
+        <div class="footer-note">🔒 GOGAMI Support Team<br>We regret the inconvenience caused.</div>
+    </div>
+</div>
+
+</body>
+</html>
